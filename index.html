@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MyCampus Cafe Menu</title>
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -12,7 +13,9 @@
       padding: 20px;
     }
 
-    input, select, button {
+    input,
+    select,
+    button {
       margin: 5px;
       padding: 8px;
     }
@@ -27,13 +30,32 @@
 </head>
 
 <body>
+
   <div id="app">
+
     <h2>MyCampus Cafe Menu</h2>
 
     <form @submit.prevent="addMenu">
-      <input v-model="newMenu.menu_name" placeholder="Menu name" required>
-      <input v-model="newMenu.category" placeholder="Category" required>
-      <input v-model="newMenu.price" type="number" step="0.01" placeholder="Price" required>
+
+      <input
+        v-model="newMenu.menu_name"
+        placeholder="Menu name"
+        required
+      >
+
+      <input
+        v-model="newMenu.category"
+        placeholder="Category"
+        required
+      >
+
+      <input
+        v-model="newMenu.price"
+        type="number"
+        step="0.01"
+        placeholder="Price"
+        required
+      >
 
       <select v-model="newMenu.availability">
         <option>Available</option>
@@ -41,132 +63,74 @@
       </select>
 
       <button type="submit">Add Menu</button>
+
     </form>
 
-    <div v-for="item in menuItems" :key="item.menu_id" class="menu-card">
+    <div
+      v-for="item in menuItems"
+      :key="item.menu_id"
+      class="menu-card"
+    >
+
       <div v-if="editId !== item.menu_id">
+
         <h3>{{ item.menu_name }}</h3>
+
         <p>Category: {{ item.category }}</p>
+
         <p>Price: RM {{ item.price }}</p>
+
         <p>Status: {{ item.availability }}</p>
 
-        <button @click="startEdit(item)">Edit</button>
-        <button @click="deleteMenu(item.menu_id)">Delete</button>
+        <button @click="startEdit(item)">
+          Edit
+        </button>
+
+        <button @click="deleteMenu(item.menu_id)">
+          Delete
+        </button>
+
       </div>
 
       <div v-else>
-        <input v-model="editMenu.menu_name" placeholder="Menu name" required>
-        <input v-model="editMenu.category" placeholder="Category" required>
-        <input v-model="editMenu.price" type="number" step="0.01" placeholder="Price" required>
+
+        <input
+          v-model="editMenu.menu_name"
+          placeholder="Menu name"
+        >
+
+        <input
+          v-model="editMenu.category"
+          placeholder="Category"
+        >
+
+        <input
+          v-model="editMenu.price"
+          type="number"
+          step="0.01"
+          placeholder="Price"
+        >
 
         <select v-model="editMenu.availability">
           <option>Available</option>
           <option>Unavailable</option>
         </select>
 
-        <button @click="updateMenu(item.menu_id)">Update</button>
-        <button @click="cancelEdit">Cancel</button>
+        <button @click="updateMenu(item.menu_id)">
+          Update
+        </button>
+
+        <button @click="cancelEdit">
+          Cancel
+        </button>
+
       </div>
+
     </div>
+
   </div>
 
-  <script>
-    const API_URL = 'http://localhost/mycampus-cafe-slim-api/public/api/menu';
+  <script src="app.js"></script>
 
-    const app = Vue.createApp({
-      data() {
-        return {
-          menuItems: [],
-          newMenu: {
-            menu_name: '',
-            category: '',
-            price: '',
-            availability: 'Available'
-          },
-          editId: null,
-          editMenu: {
-            menu_name: '',
-            category: '',
-            price: '',
-            availability: 'Available'
-          }
-        };
-      },
-
-      methods: {
-        fetchMenu() {
-          fetch(API_URL)
-            .then(response => response.json())
-            .then(data => this.menuItems = data)
-            .catch(error => console.error('API error:', error));
-        },
-
-        addMenu() {
-          fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(this.newMenu)
-          })
-            .then(response => response.json())
-            .then(() => {
-              this.fetchMenu();
-              this.newMenu = {
-                menu_name: '',
-                category: '',
-                price: '',
-                availability: 'Available'
-              };
-            });
-        },
-
-        deleteMenu(id) {
-          fetch(`${API_URL}/${id}`, {
-            method: 'DELETE'
-          })
-            .then(response => response.json())
-            .then(() => this.fetchMenu());
-        },
-
-        startEdit(item) {
-          this.editId = item.menu_id;
-          this.editMenu = {
-            menu_name: item.menu_name,
-            category: item.category,
-            price: item.price,
-            availability: item.availability
-          };
-        },
-
-        updateMenu(id) {
-          fetch(`${API_URL}/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(this.editMenu)
-          })
-            .then(response => response.json())
-            .then(() => {
-              this.fetchMenu();
-              this.cancelEdit();
-            });
-        },
-
-        cancelEdit() {
-          this.editId = null;
-          this.editMenu = {
-            menu_name: '',
-            category: '',
-            price: '',
-            availability: 'Available'
-          };
-        }
-      },
-
-      mounted() {
-        this.fetchMenu();
-      }
-    });
-
-    app.mount('#app');
-  </script>
 </body>
 </html>
