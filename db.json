@@ -1,0 +1,39 @@
+{
+  "orders": [
+    {
+      "customerName": "Esha",
+      "foodItem": "Nasi Lemak",
+      "quantity": 1,
+      "totalPrice": 5,
+      "id": 1
+    },
+    {
+      "customerName": "Azmain",
+      "foodItem": "Mee Goreng",
+      "quantity": 2,
+      "totalPrice": 12,
+      "id": 2
+    },
+    {
+      "customerName": "Aqilla",
+      "foodItem": "Chicken Rice",
+      "quantity": 1,
+      "totalPrice": 7,
+      "id": 3
+    },
+    {
+      "customerName": "Esha",
+      "foodItem": "Nasi Lemak",
+      "quantity": 1,
+      "totalPrice": 5,
+      "id": 4
+    },
+    {
+      "customerName": "Esha",
+      "foodItem": "Sandwich",
+      "quantity": 1,
+      "totalPrice": 4,
+      "id": 5
+    }
+  ]
+}
