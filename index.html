@@ -3,72 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MyCampus Cafe Menu</title>
+  <title>My Cafe</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    input, select, button { margin: 5px; padding: 8px; }
-    .menu-card { border: 1px solid #ccc; padding: 15px; margin-top: 10px; border-radius: 5px; }
-    .auth-box { background: #f4f4f4; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ddd; }
-    .status-msg { color: #0066cc; font-weight: bold; margin: 5px; }
-  </style>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <div class="bg-orb bg-orb-blue"></div>
+  <div class="bg-orb bg-orb-pink"></div>
 
   <div id="app">
-    <h2>MyCampus Cafe Menu</h2>
+    <main class="app-shell">
+      <section class="hero-card glass-card title-card">
+        <h1>My Cafe</h1>
+      </section>
 
-    <p v-if="message" class="status-msg">{{ message }}</p>
+      <p v-if="message" class="status-msg glass-chip">{{ message }}</p>
 
-    <div class="auth-box">
-      <div v-if="!isLoggedIn">
-        <h3>Staff Login</h3>
-        <form @submit.prevent="loginStaff">
-          <input v-model="login.username" placeholder="Username" required>
-          <input v-model="login.password" type="password" placeholder="Password" required>
-          <button type="submit">Login</button>
+      <section class="glass-card auth-box">
+        <div v-if="!isLoggedIn">
+          <form class="stack-form" @submit.prevent="loginStaff">
+            <input v-model="login.username" placeholder="Username" required>
+            <input v-model="login.password" type="password" placeholder="Password" required>
+            <button type="submit" class="btn-primary">Login</button>
+          </form>
+        </div>
+        <div v-else class="logged-in-row">
+          <button @click="logoutStaff" class="btn-secondary">Logout</button>
+        </div>
+      </section>
+
+      <section v-if="isLoggedIn" class="glass-card editor-box">
+        <form class="stack-form compact-grid" @submit.prevent="addMenu">
+          <input v-model="newMenu.menu_name" placeholder="Menu name" required>
+          <input v-model="newMenu.category" placeholder="Category" required>
+          <input v-model="newMenu.price" type="number" step="0.01" placeholder="Price" required>
+          <select v-model="newMenu.availability">
+            <option>Available</option>
+            <option>Unavailable</option>
+          </select>
+          <button type="submit" class="btn-primary btn-wide">Add Menu</button>
         </form>
-      </div>
-      <div v-else>
-        <p>Logged in as Staff</p>
-        <button @click="logoutStaff">Logout</button>
-      </div>
-    </div>
+      </section>
 
-    <form v-if="isLoggedIn" @submit.prevent="addMenu">
-      <input v-model="newMenu.menu_name" placeholder="Menu name" required>
-      <input v-model="newMenu.category" placeholder="Category" required>
-      <input v-model="newMenu.price" type="number" step="0.01" placeholder="Price" required>
-      <select v-model="newMenu.availability">
-        <option>Available</option>
-        <option>Unavailable</option>
-      </select>
-      <button type="submit">Add Menu</button>
-    </form>
-
-    <div v-for="item in menuItems" :key="item.menu_id" class="menu-card">
-      <div v-if="editId !== item.menu_id">
-        <h3>{{ item.menu_name }}</h3>
-        <p>Category: {{ item.category }}</p>
-        <p>Price: RM {{ item.price }}</p>
-        <p>Status: {{ item.availability }}</p>
-        <span v-if="isLoggedIn">
-          <button @click="startEdit(item)">Edit</button>
-          <button @click="deleteMenu(item.menu_id)">Delete</button>
-        </span>
-      </div>
-      <div v-else>
-        <input v-model="editMenu.menu_name" placeholder="Menu name">
-        <input v-model="editMenu.category" placeholder="Category">
-        <input v-model="editMenu.price" type="number" step="0.01" placeholder="Price">
-        <select v-model="editMenu.availability">
-          <option>Available</option>
-          <option>Unavailable</option>
-        </select>
-        <button @click="updateMenu(item)">Update</button>
-        <button @click="cancelEdit">Cancel</button>
-      </div>
-    </div>
+      <section class="menu-section">
+        <div class="menu-grid">
+          <article v-for="item in menuItems" :key="item.menu_id" class="glass-card menu-card">
+            <div v-if="editId !== item.menu_id" class="menu-view">
+              <div class="menu-topline">
+                <h3>{{ item.menu_name }}</h3>
+                <span class="badge" :class="item.availability === 'Available' ? 'badge-available' : 'badge-unavailable'">{{ item.availability }}</span>
+              </div>
+              <p class="category">{{ item.category }}</p>
+              <p class="price">RM {{ item.price }}</p>
+              <div v-if="isLoggedIn" class="card-actions">
+                <button @click="startEdit(item)" class="btn-secondary">Edit</button>
+                <button @click="deleteMenu(item.menu_id)" class="btn-danger">Delete</button>
+              </div>
+            </div>
+            <div v-else class="menu-edit stack-form">
+              <input v-model="editMenu.menu_name" placeholder="Menu name">
+              <input v-model="editMenu.category" placeholder="Category">
+              <input v-model="editMenu.price" type="number" step="0.01" placeholder="Price">
+              <select v-model="editMenu.availability">
+                <option>Available</option>
+                <option>Unavailable</option>
+              </select>
+              <div class="card-actions">
+                <button @click="updateMenu(item)" class="btn-primary">Update</button>
+                <button @click="cancelEdit" class="btn-secondary">Cancel</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script src="js/api.js"></script>
