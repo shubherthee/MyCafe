@@ -106,7 +106,8 @@ $app->post('/api/login', function (Request $request, Response $response) {
 
     try {
 
-        $db = (new DB())->connect();
+        $db = new PDO("mysql:host=127.0.0.1;port=3307;dbname=mycampus_cafe", "root", "");
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $stmt = $db->prepare(
             'SELECT staff_id, username, bcrypt_password, role
@@ -151,7 +152,8 @@ $app->post('/api/login', function (Request $request, Response $response) {
 // GET: retrieve all menu items.
 $app->get('/api/menu', function (Request $request, Response $response) {
     try {
-        $db = (new DB())->connect();
+        $db = new PDO("mysql:host=127.0.0.1;port=3307;dbname=mycampus_cafe", "root", "");
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $stmt = $db->query('SELECT * FROM menu ORDER BY menu_id DESC');
         return jsonResponse($response, $stmt->fetchAll());
     } catch (PDOException $e) {

@@ -26,6 +26,14 @@
       margin-top: 10px;
       border-radius: 5px;
     }
+
+    .auth-box {
+      background: #f4f4f4;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
   </style>
 </head>
 
@@ -35,7 +43,22 @@
 
     <h2>MyCampus Cafe Menu</h2>
 
-    <form @submit.prevent="addMenu">
+    <div class="auth-box">
+      <div v-if="!token">
+        <h3>Staff Login</h3>
+        <form @submit.prevent="loginStaff">
+          <input v-model="loginForm.username" placeholder="Username" required>
+          <input v-model="loginForm.password" type="password" placeholder="Password" required>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+      <div v-else>
+        <p>Logged in as Staff</p>
+        <button @click="logoutStaff">Logout</button>
+      </div>
+    </div>
+
+    <form v-if="token" @submit.prevent="addMenu">
 
       <input
         v-model="newMenu.menu_name"
@@ -82,13 +105,15 @@
 
         <p>Status: {{ item.availability }}</p>
 
-        <button @click="startEdit(item)">
-          Edit
-        </button>
+        <span v-if="token">
+          <button @click="startEdit(item)">
+            Edit
+          </button>
 
-        <button @click="deleteMenu(item.menu_id)">
-          Delete
-        </button>
+          <button @click="deleteMenu(item.menu_id)">
+            Delete
+          </button>
+        </span>
 
       </div>
 
@@ -130,7 +155,8 @@
 
   </div>
 
-  <script src="app.js"></script>
+ <script src="js/api.js"></script>
+ <script src="app.js"></script>
 
 </body>
 </html>
