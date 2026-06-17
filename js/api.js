@@ -1,5 +1,5 @@
 const API_CONFIG = {
-  BASE_URL: "http://shubherthee.ifree.page/api"
+  BASE_URL: "https://shubherthee.ifree.page/api"
 };
 
 function getToken() {
