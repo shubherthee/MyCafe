@@ -1,7 +1,7 @@
 <?php
 
 class DB {
-    private $host = "localhost";
+    private $host = "127.0.0.1";
     private $dbname = "mycampus_cafe";
     private $username = "root";
     private $password = "";
