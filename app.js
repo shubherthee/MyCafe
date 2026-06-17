@@ -1,140 +1,154 @@
-const API_BASE = API_CONFIG.BASE_URL;
-
 const app = Vue.createApp({
 
   data() {
     return {
-      token: localStorage.getItem('mc_token') || '',
-      loginForm: {
-        username: '',
-        password: ''
-      },
       menuItems: [],
+      message: "",
+      isLoggedIn: !!getToken(),
+      token: getToken() || "",
+      login: {
+        username: "",
+        password: ""
+      },
       newMenu: {
-        menu_name: '',
-        category: '',
-        price: '',
-        availability: 'Available'
+        menu_name: "",
+        category: "",
+        price: "",
+        availability: "Available"
       },
       editId: null,
       editMenu: {
-        menu_name: '',
-        category: '',
-        price: '',
-        availability: 'Available'
+        menu_name: "",
+        category: "",
+        price: "",
+        availability: "Available"
       }
     };
   },
 
   methods: {
 
-    loginStaff() {
-      fetch(`${API_BASE}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(this.loginForm)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.token) {
-          this.token = data.token;
-          localStorage.setItem('mc_token', data.token);
-          alert('Login successful!');
-          this.loginForm = { username: '', password: '' };
+    async loginStaff() {
+      try {
+        const response = await fetch(API_CONFIG.BASE_URL + "/login", {
+          method: "POST",
+          headers: publicHeaders(),
+          body: JSON.stringify({
+            username: this.login.username,
+            password: this.login.password
+          })
+        });
+        const result = await response.json();
+        if (response.ok && result.token) {
+          setToken(result.token);
+          this.token = result.token;
+          this.isLoggedIn = true;
+          this.message = "Login successful.";
+          this.login = { username: "", password: "" };
         } else {
-          alert(data.message || 'Login failed');
+          this.message = handleApiError(response, result);
         }
-      })
-      .catch(error => console.error('Login error:', error));
-    },
-
-    authHeaders() {
-      return {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + this.token
-      };
+      } catch (error) {
+        this.message = "Unable to connect to server.";
+        console.error(error);
+      }
     },
 
     logoutStaff() {
-      this.token = '';
-      localStorage.removeItem('mc_token');
-      alert('Logged out successfully');
+      clearToken();
+      this.token = "";
+      this.isLoggedIn = false;
+      this.message = "Logged out successfully.";
     },
 
-    fetchMenu() {
-      fetch(`${API_BASE}/menu`)
-        .then(response => response.json())
-        .then(data => {
-          this.menuItems = data;
-        })
-        .catch(error => {
-          console.error('API error:', error);
+    async fetchMenu() {
+      try {
+        const response = await fetch(API_CONFIG.BASE_URL + "/menu");
+        this.menuItems = await response.json();
+      } catch (error) {
+        this.message = "Failed to load menu data.";
+        console.error(error);
+      }
+    },
+
+    async addMenu() {
+      try {
+        const response = await fetch(API_CONFIG.BASE_URL + "/menu", {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify(this.newMenu)
         });
-    },
-
-    addMenu() {
-      fetch(`${API_BASE}/menu`, {
-        method: 'POST',
-        headers: this.authHeaders(),
-        body: JSON.stringify(this.newMenu)
-      })
-      .then(response => response.json())
-      .then(() => {
-        this.fetchMenu();
-        this.newMenu = {
-          menu_name: '',
-          category: '',
-          price: '',
-          availability: 'Available'
-        };
-      });
-    },
-
-    deleteMenu(id) {
-      fetch(`${API_BASE}/menu/${id}`, {
-        method: 'DELETE',
-        headers: this.authHeaders()
-      })
-      .then(response => response.json())
-      .then(() => {
-        this.fetchMenu();
-      });
+        const result = await response.json();
+        if (response.ok) {
+          this.message = "Menu item added successfully.";
+          this.newMenu = {
+            menu_name: "",
+            category: "",
+            price: "",
+            availability: "Available"
+          };
+          this.fetchMenu();
+        } else {
+          this.message = handleApiError(response, result);
+        }
+      } catch (error) {
+        this.message = "Server connection error.";
+        console.error(error);
+      }
     },
 
     startEdit(item) {
       this.editId = item.menu_id;
-      this.editMenu = {
-        menu_name: item.menu_name,
-        category: item.category,
-        price: item.price,
-        availability: item.availability
-      };
-    },
-
-    updateMenu(id) {
-      fetch(`${API_BASE}/menu/${id}`, {
-        method: 'PUT',
-        headers: this.authHeaders(),
-        body: JSON.stringify(this.editMenu)
-      })
-      .then(response => response.json())
-      .then(() => {
-        this.fetchMenu();
-        this.cancelEdit();
-      });
+      this.editMenu = { ...item };
     },
 
     cancelEdit() {
       this.editId = null;
-      this.editMenu = {
-        menu_name: '',
-        category: '',
-        price: '',
-        availability: 'Available'
-      };
+    },
+
+    async updateMenu(item) {
+      try {
+        const response = await fetch(API_CONFIG.BASE_URL + "/menu/" + item.menu_id, {
+          method: "PUT",
+          headers: authHeaders(),
+          body: JSON.stringify(this.editMenu)
+        });
+        const result = await response.json();
+        if (response.ok) {
+          this.message = "Menu item updated successfully.";
+          this.editId = null;
+          this.fetchMenu();
+        } else {
+          this.message = handleApiError(response, result);
+        }
+      } catch (error) {
+        this.message = "Unable to update menu.";
+        console.error(error);
+      }
+    },
+
+    async deleteMenu(id) {
+      if (!confirm("Are you sure you want to delete this menu item?")) {
+        return;
+      }
+      try {
+        const response = await fetch(API_CONFIG.BASE_URL + "/menu/" + id, {
+          method: "DELETE",
+          headers: authHeaders()
+        });
+        const result = await response.json();
+        if (response.ok) {
+          this.message = "Menu item deleted successfully.";
+          this.fetchMenu();
+        } else {
+          this.message = handleApiError(response, result);
+        }
+      } catch (error) {
+        this.message = "Unable to delete menu.";
+        console.error(error);
+      }
     }
+
   },
 
   mounted() {
@@ -143,4 +157,4 @@ const app = Vue.createApp({
 
 });
 
-app.mount('#app');
+app.mount("#app");

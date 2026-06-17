@@ -1,0 +1,124 @@
+:root {
+  --sky-blue: #a3c9e2;
+  --cloud-white: rgba(255, 255, 255, 0.7);
+  --pastel-pink: #f4d0dd;
+  --text-dark: #4a5568;
+  --glass-border: rgba(255, 255, 255, 0.5);
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--sky-blue) 0%, var(--pastel-pink) 100%);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Glassmorphism Utilities */
+.glass-header, .glass-panel, .glass-card {
+  background: var(--cloud-white);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+.glass-header {
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content-wrapper {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-grow: 1;
+}
+
+/* Panels and Cards */
+.glass-panel {
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.menu-container {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.menu-card {
+  padding: 1.5rem;
+  border-radius: 20px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Inputs and Buttons */
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  box-sizing: border-box;
+  color: var(--text-dark);
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #8bb5d1;
+  box-shadow: 0 0 10px rgba(139, 181, 209, 0.3);
+}
+
+button {
+  cursor: pointer;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #8bb5d1;
+  color: white;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background: #7aa1bc;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid #8bb5d1;
+  color: #8bb5d1;
+}
+
+.btn-secondary:hover {
+  background: #8bb5d1;
+  color: white;
+}
